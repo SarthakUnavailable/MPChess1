@@ -25,6 +25,7 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
 var click_count=0,move_count=0;
 var from=[],to=[];
 var oldtarget,newtarget;
+var killstr='';
 
 function drawBoard(board){ //to draw the board
     var str = '';
@@ -40,6 +41,7 @@ function drawBoard(board){ //to draw the board
         str += '</div>';
     }
     $('#board').append(str);
+    $('#kill').append(killstr);
 }
 
 
@@ -156,7 +158,13 @@ function validate_piece(from,to,piece)                                      //Al
         case 'WHITE_KING':
         case 'BLACK_KING':
             if((row_diff===0 || row_diff===1) && (column_diff===0 || column_diff===1))
-              return 1;
+            {
+                if(board[to[0]][to[1]]*board[from[0]][from[1]]!=0){
+                    $("#boarddetails").html("killed");
+//                    $('#kill').addclass("'" + getPieceName(board[to[0]][to[1]]) + "'");
+                }
+                return 1;
+            }
             else  
               return 0;
             break;
@@ -193,10 +201,27 @@ function validate_piece(from,to,piece)                                      //Al
             {
                 if(from[0]===6 && from[0]-to[0]<=2)                                     //First move of a pawn
                 {
-                    if(to[1]===from[1] && board[to[0]][to[1]]===0)     
+                    if(to[1]===from[1] && board[to[0]][to[1]]===0){
+                        if(board[to[0]][to[1]]*board[from[0]][from[1]]!=0){
+                            $("#boarddetails").html("killed");
+//                            $('#kill').addclass("'" + getPieceName(board[to[0]][to[1]]) + "'");
+                        }
+                        else
+                            $("#boarddetails").html("NotKilled");                            
                         return 1;
+                    }
                     else if((column_diff===1) && board[to[0]][to[1]]!=0)     //Diagonal kill, !=0 cuz >0 condn already checked in validate_move
+                    {
+                        if(board[to[0]][to[1]]*board[from[0]][from[1]]!=0){
+                            $("#boarddetails").html("killed");
+                            killstr += '<div class="'+getPieceName(board[to[0]][to[1]]+'"');
+//                            $('#kill').addclass('column ' + getPieceName(board[to[0]][to[1]]));
+//                            $('#kill').html("killed"+getPieceName(board[to[0]][to[1]]))
+                        }
+                        else
+                            $("#boarddetails").html("NotKilled");   
                         return 1;                                                        //there's a black piece present
+                    }
                     else
                         return 0;
                 }
@@ -218,6 +243,7 @@ function validate_piece(from,to,piece)                                      //Al
             break;
 
         case 'BLACK_PAWN':
+            return 1;
             //have to change it back to white pawn later cuz in multiplayer view, even 2nd player will have his black pieces at the bottom in the beginning
             if(to[0]-from[0]>0)                                                         //Black Pawn moves forward
             {
