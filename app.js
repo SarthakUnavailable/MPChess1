@@ -126,6 +126,15 @@ function move_init(board) //to move the corresponding clicked pieces
           {
             to[0]=row_index;
             to[1]=column_index;
+            if(board[from[0]][from[1]]*board[to[0]][to[1]] > 0)
+            {
+              from[0]=row_index;
+              from[1]=column_index;
+              click_count=1;
+              oldtarget=target;
+              newtarget.removeClass("divborder");
+              return;
+            }
             validate_move(from,to,oldtarget.data("piece")); //to validate move. oldtarget's piece cuz new target will be empty space
             click_count=0;
             newtarget=target;
