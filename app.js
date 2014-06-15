@@ -1,3 +1,5 @@
+//Working
+
 var WHITE_KING = 6;
 var WHITE_QUEEN = 5;
 var WHITE_ROOK = 4;
