@@ -1,5 +1,3 @@
-//Working
-
 var WHITE_KING = 6;
 var WHITE_QUEEN = 5;
 var WHITE_ROOK = 4;
@@ -108,7 +106,7 @@ function move_init(board) //to move the corresponding clicked pieces
           target.addClass("divborder");
           row_index=target.data("row");
           column_index=target.data("column");
-          
+
           if(click_count===0)
           {
             piece=target.data("piece");
@@ -143,11 +141,13 @@ function move_init(board) //to move the corresponding clicked pieces
             $("#board").html(" ");
             $("#turn").html(move_count%2);
             drawBoard(board);
+            if((move_count%2==0 && isCheck(white_king_coor)==1) || (move_count%2==1 && isCheck(black_king_coor)==1))
+                $("#boarddetails").html("Check, mate");
             //target.removeClass("divborder");
           }
 }
 
-function validate_piece(from,to,piece)                                      //Also we shoukd check for the presence of any other piece in the way.. Too lazy now
+function possible_move(from,to,piece)                                      //To adhere to the movements of the pieces according to the chess rules
 {
   $("#boarddetails").html(" ");
   var row_diff,column_diff;
@@ -255,17 +255,14 @@ function validate_piece(from,to,piece)                                      //Al
     } 
 }
 
-function validate_move(from,to,piece)                              //to validate move
+function validate_move(from,to,piece)                                                   //Check whether the to[] coordinates are empty and if the piece can be moved to the given to[] coordinate
 {
   var str="from=" + from[0] +"  "+from[1]+" to="+to[0]+" "+to[1];
   $("#details").html(str);
   if((board[to[0]][to[1]]*board[from[0]][from[1]])>0)
     return 0;
-  if(validate_piece(from,to,piece) === 1)
+  if(possible_move(from,to,piece) === 1)
     change(from,to,piece);
-
-//  else
-//    $("#details").html("Problem");
 }
 
 function change(from,to,piece)
@@ -290,7 +287,7 @@ function isPathValid(from,to,piece)
         i=from[0]-1;
         if(column_diff===0)                 //vertical upwards
         {
-            j=from[1];                 board[i][j]
+            j=from[1];
             incr_j=0;
         }
         else if(column_diff>0)              //right diagonal upwards
@@ -397,4 +394,49 @@ function isPathValid(from,to,piece)
 
 
     return true;
+}
+
+function isCheck(kingcoor[])
+{
+    var i,j,i_incr,j_incr;
+    //i_incr=1,j_incr=0
+    for(i=kingcoor[0]+1,j=kingcoor[1];board[i][j]!=0;i++);                                   //Horizontal right -- i stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0]-1,j=kingcoor[1];board[i][j]!=0;i--);                                   //Horizontal left -- i stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0],j=kingcoor[1]+1;board[i][j]!=0;j++);                                   //Up -- j stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0],j=kingcoor[1]-1;board[i][j]!=0;j--);                                   //down -- j stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0]+1,j=kingcoor[1]+1;board[i][j]!=0;i++,j++);                              //Diagonal right down -- (i,j) stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0]+1,j=kingcoor[1]-1;board[i][j]!=0;i++,j--);                              //Diagonal right up-- (i,j) stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0]-1,j=kingcoor[1]-1;board[i][j]!=0;i--,j--);                              //Diagonal left up -- (i,j) stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    for(i=kingcoor[0]-1,j=kingcoor[1]+1;board[i][j]!=0;i--,j++);                              //Diagonal left down -- (i,j) stops at the first piece it sees (either white or black)
+
+    if(board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
 }
