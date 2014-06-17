@@ -552,3 +552,4 @@ function isCheck(kingcoor)
     $('#boarddetails').html("Return 0");
     return 0;
 }
+//this is just a stupid comment
