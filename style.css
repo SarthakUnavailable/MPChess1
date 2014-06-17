@@ -6,14 +6,17 @@
     border-color: black;
 }
 
-#kill {
-    height: 100px;
-    width: 400px;
-    float: left;
+#kill{
+    height:400px;
+    width:400px;
+    background: green;
     border-width: 1px;
     border-style: solid;
     border-color: black;
+    
+    margin:auto;
 }
+
 
 #details{
     height: 50px;
@@ -59,63 +62,68 @@
 #board .column.dark {
     background: #8C5244;
 }
+
+#kill div{
+    height: 50px;
+    width: 50px;
+    float: left;
+}
  
 #board .column div {
     height: 50px;
     width: 50px;
 }
 
-#board .column .WHITE_KING {
+.WHITE_KING {
     background: url(' images/wking.png');
 }
  
-#board .column .WHITE_QUEEN {
+.WHITE_QUEEN {
     background: url(' images/wqueen.png');
 }
  
-#board .column .WHITE_ROOK {
+.WHITE_ROOK {
     background: url(' images/wrook.png');
 }
  
-#board .column .WHITE_BISHOP {
+.WHITE_BISHOP {
     background: url('images/wbishop.png');
 }
  
-#board .column .WHITE_KNIGHT {
+.WHITE_KNIGHT {
     background: url(' images/wknight.png');
 }
  
-#board .column .WHITE_PAWN {
+.WHITE_PAWN {
     background: url(' images/wpawn.png');
 }
  
  
-#board .column .BLACK_KING {
+.BLACK_KING {
     background: url(' images/bking.png');
 }
  
-#board .column .BLACK_QUEEN {
+.BLACK_QUEEN {
     background: url(' images/bqueen.png');
 }
  
-#board .column .BLACK_ROOK {
+.BLACK_ROOK {
     background: url(' images/brook.png');
 }
  
-#board .column .BLACK_BISHOP {
+.BLACK_BISHOP {
     background: url(' images/bbishop.png');
 }
  
-#board .column .BLACK_KNIGHT {
+.BLACK_KNIGHT {
     background: url(' images/bknight.png');
 }
  
-#board .column .BLACK_PAWN {
+.BLACK_PAWN {
     background: url(' images/bpawn.png');
 }
  
-#board .column .EMPTY {
+.EMPTY {
     background: none;
     cursor: default;
 }
-
