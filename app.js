@@ -23,7 +23,15 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
 
-
+/*var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
+*/
 var click_count=0,move_count=0;
 var from=[],to=[];
 var oldtarget,newtarget;
@@ -109,7 +117,7 @@ $('#board').click(function()
 
 function move_init(board) //to move the corresponding clicked pieces
 {
-          var target,row_index,column_index,piece;
+          var target,row_index,column_index,piece,tempkingcoor=[];
           target = $(event.target);
           target.addClass("divborder");
           row_index=target.data("row");
@@ -151,10 +159,20 @@ function move_init(board) //to move the corresponding clicked pieces
             $("#board").html(" ");
             $("#turn").html(move_count%2);
             drawBoard(board);
-            if((move_count%2==0 && isCheck(white_king_coor)==1) || (move_count%2==1 && isCheck(black_king_coor)==1))
+            if(move_count%2===0)
+                tempkingcoor=white_king_coor;
+            else
+                tempkingcoor=black_king_coor;
+           if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
+            {   
                 $("#boarddetails").html(move_count%2==0?'Check for white':'Check for black');
+
+                if(isCheckMate(tempkingcoor))
+                    $("#boarddetails").html("Checkmate bitch!");
+
             //target.removeClass("divborder");
-          }
+            }
+        }
 }
 
 function possible_move(from,to,piece) //To adhere to the movements of the pieces according to the chess rules
@@ -466,11 +484,12 @@ function isPathValid(from,to,piece)
     {
         while(i>to[0])
         {
-            if(board[i][j])
-            {
-                $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
-                return false;
-            }
+            if(i<8 && i>=0 && j<8 && j>=0)
+                if(board[i][j])
+                {
+                    $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                    return false;
+                }
             i--;
             j+=incr_j;
         }
@@ -479,11 +498,12 @@ function isPathValid(from,to,piece)
     {
         while(i<to[0])
         {
-            if(board[i][j])
-            {
-                $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
-                return false;
-            }
+            if(i<8 && i>=0 && j<8 && j>=0)
+                if(board[i][j])
+                {
+                    $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                    return false;
+                }
             i++;
             j+=incr_j;
         }
@@ -493,21 +513,23 @@ function isPathValid(from,to,piece)
         if(column_diff>0)
             while(i<to[1])
             {
-                if(board[i][j])
-                {
-                   $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
-                   return false;
-                }
+                if(i<8 && i>=0 && j<8 && j>=0)
+                    if(board[i][j])
+                    {
+                        $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                        return false;
+                    }
                 j+=incr_j;
             }
         else
             while(i>to[1])
             {
-                if(board[i][j])
-                {
-                   $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
-                   return false;
-                }
+                if(i<8 && i>=0 && j<8 && j>=0)
+                    if(board[i][j])
+                    {
+                        $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                        return false;
+                    }
                 j+=incr_j;
             }
     }
@@ -521,6 +543,11 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     tempto = board[to[0]][to[1]];
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
+    if(from[0]==kingcoor[0] && from[1]==kingcoor[1])
+    {
+        kingcoor[0]=to[0];
+        kingcoor[1]=to[1];
+    }    
     $("#boarddetails").html("Entered move_leads_to_check");
     if(isCheck(kingcoor)===1)
     {
@@ -538,7 +565,7 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     }
 }
 
-function isCheck(kingcoor)
+function isCheck(kingcoor)                                              //knight and pawn pending
 {
     var i,j;
 //    $('#boarddetails').html("entered with "+kingcoor[0]+" and "+kingcoor[1]);
@@ -583,5 +610,27 @@ function isCheck(kingcoor)
     if(j<8 && i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
         return 1;
 //    $('#boarddetails').html("No check on "+kingcoor[0]+' '+kingcoor[1]);
-    return 0;
+    return 0;                           //no check
+}
+
+function isCheckMate(kingcoor)
+{
+    var i=[],count=0;
+    i[0]=kingcoor[0]-1;
+    i[1]=kingcoor[1]-1;
+    for(;i[0]<=kingcoor[0]+1;i[0]+=1)
+    {
+        if(i[0]>=8 || i[0]<0)
+            continue;
+        if(i[0]==kingcoor[0] && i[0]==kingcoor[1])
+            continue;
+        for(;i[1]<=kingcoor[1]+1;i[1]+=1)
+        {
+            if(i[1]>=8 || i[1]<0)
+                continue;
+            if(isCheck(i)===0)
+                return 0;  
+        }                                                     
+    }
+    return 1;                                           //it is a checkmate
 }
