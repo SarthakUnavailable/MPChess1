@@ -552,4 +552,3 @@ function isCheck(kingcoor)
     $('#boarddetails').html("Return 0");
     return 0;
 }
-//sfdj;sdkfjsd;sej;fosidfsdfjsdfsd
