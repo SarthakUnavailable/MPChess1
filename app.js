@@ -373,10 +373,20 @@ function validate_move(from,to,piece) //Check whether the to[] coordinates are e
 {
   var str="from=" + from[0] +" "+from[1]+" to="+to[0]+" "+to[1];
   $("#details").html(str);
-  if((move_count%2==1 && isCheck(white_king_coor)==1) || (move_count%2==0 && isCheck(black_king_coor)==1) || (board[to[0]][to[1]]*board[from[0]][from[1]])>0)
+  if((board[to[0]][to[1]]*board[from[0]][from[1]])>0)                                   //Return 0 if same color piece is present in to[]
     return 0;
+
+  if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move_leads_to_check(from,to,white_king_coor)===1 && move_count%2==0))
+  {
+//    $("#boarddetails").html("Check if this move is made");
+    return 0;
+  }
+  $("#boarddetails").html("Changing the coor");
+
   if(possible_move(from,to,piece) === 1)
+  {
     change(from,to,piece);
+  }
 // else
 // $("#details").html("Problem");
 }
@@ -505,51 +515,73 @@ function isPathValid(from,to,piece)
     return true;
 }
 
+function move_leads_to_check(from,to,kingcoor)                          //Checks if the move leads to check for the same color
+{
+    temp = board[from[0]][from[1]];
+    tempto = board[to[0]][to[1]];
+    board[to[0]][to[1]]=board[from[0]][from[1]];
+    board[from[0]][from[1]]=0;
+    $("#boarddetails").html("Entered move_leads_to_check");
+    if(isCheck(kingcoor)===1)
+    {
+        $("#boarddetails").append("  Check on the king");
+        board[from[0]][from[1]]=temp;
+        board[to[0]][to[1]]=tempto;
+        return 1;                                                   //Returns 1 if it leads to a check
+    }
+    else
+    {
+        $("#boarddetails").append(" No Check on the king");
+        board[from[0]][from[1]]=temp;
+        board[to[0]][to[1]]=0;
+        return 0;
+    }
+}
+
 function isCheck(kingcoor)
 {
     var i,j;
-    $('#boarddetails').html("entered with "+kingcoor[0]+" and "+kingcoor[1]);
+//    $('#boarddetails').html("entered with "+kingcoor[0]+" and "+kingcoor[1]);
     //i_incr=1,j_incr=0
     for(i=kingcoor[0]+1,j=kingcoor[1];i<8&&board[i][j]==0;i++); //Down -- i stops at the first piece it sees (either white or black)
 
-    if(i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==-4 || board[i][j]==-4))
         return 1;
 
     for(i=kingcoor[0]-1,j=kingcoor[1];i>=0&&board[i][j]==0;i--); //Up -- i stops at the first piece it sees (either white or black)
 
-    if(i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==-4 || board[i][j]==-4))
         return 1;
 
     for(i=kingcoor[0],j=kingcoor[1]+1;j<8&&board[i][j]==0;j++); //Horizontal Right -- j stops at the first piece it sees (either white or black)
 
-    if(j<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(j<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==-4 || board[i][j]==-4))
         return 1;
 
     for(i=kingcoor[0],j=kingcoor[1]-1;j>=0&&board[i][j]==0;j--); //Horizontal left -- j stops at the first piece it sees (either white or black)
 
-    if(j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0  && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==-4 || board[i][j]==-4))
         return 1;
 
     for(i=kingcoor[0]+1,j=kingcoor[1]+1;j<8&&i<8&&board[i][j]==0;i++,j++); //Diagonal right down -- (i,j) stops at the first piece it sees (either white or black)
 
-    if(j<8 && i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(j<8 && i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
         return 1;
 
     for(i=kingcoor[0]+1,j=kingcoor[1]-1;i<8&&j>=0&&board[i][j]==0;i++,j--); //Diagonal left down-- (i,j) stops at the first piece it sees (either white or black)
 
-    if(i<8 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(i<8 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0  && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
         return 1;
 
     for(i=kingcoor[0]-1,j=kingcoor[1]-1;i>=0&&j>=0&&board[i][j]==0;i--,j--); //Diagonal left up -- (i,j) stops at the first piece it sees (either white or black)
 
-    if(i>=0 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(i>=0 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
         return 1;
 
     for(i=kingcoor[0]-1,j=kingcoor[1]+1;j<8&&i>=0&&board[i][j]==0;i--,j++); //Diagonal right up -- (i,j) stops at the first piece it sees (either white or black)
 
-    if(j<8 && i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(j<8 && i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
         return 1;
-    $('#boarddetails').html("Return 0");
+//    $('#boarddetails').html("No check on "+kingcoor[0]+' '+kingcoor[1]);
     return 0;
 }
-//Time pass
