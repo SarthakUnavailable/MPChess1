@@ -14,7 +14,7 @@ var BLACK_BISHOP = -WHITE_BISHOP;
 var BLACK_KNIGHT = -WHITE_KNIGHT;
 var BLACK_PAWN = -WHITE_PAWN;
 
-/*var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
+var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
              [BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -22,15 +22,15 @@ var BLACK_PAWN = -WHITE_PAWN;
              [0,0,0,0,0,0,0,0],
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
-*/var board = [[0,0,0,0,BLACK_KING,0,0,0],
-             [0,WHITE_QUEEN,0,0,0,0,WHITE_ROOK],
-             [0,0,0,0,0,0,0,0],
+/*var board = [[0,0,0,0,BLACK_KING,0,0,0],
+             [0,0,0,0,0,0,WHITE_ROOK,0],
+             [0,WHITE_QUEEN,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0, 0, WHITE_KING, 0,0,0]];
-
+*/
 var click_count=0,move_count=0;
 var from=[],to=[];
 var oldtarget,newtarget;
@@ -387,6 +387,7 @@ if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move
     return ;
   }
   //$("#boarddetails").append("Changing the coor");
+//$("#boarddetails").html("Value of blackkingcoor is: "+black_king_coor[0]+' and '+black_king_coor[1]);
 
   if(possible_move(from,to,piece) === 1)
   {
@@ -410,7 +411,8 @@ function change(from,to,piece)
     $("#boarddetails").append("checking for the check for the other color\n");
     if(isCheck(tempkingcoor,0)===1)                           //is there a check for the other colour?  
     {   
-
+       // var tuple=[];
+       // tuple=tempkingcoor;
         $("#boarddetails").append(move_count%2==0?'Check for black':'Check for white');
             if(isCheckMate(tempkingcoor))
                 $("#boarddetails").append("Checkmate!");
@@ -552,31 +554,55 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     var tempto = board[to[0]][to[1]];
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
+    var tempkingcoor=[];
     if(from[0]==kingcoor[0] && from[1]==kingcoor[1])
     {
         $("#boarddetails").append("the hell?");
-        kingcoor[0]=to[0];
-        kingcoor[1]=to[1];
-    }    
-    $("#boarddetails").append("Entered move_leads_to_check");
+        tempkingcoor[0]=to[0];
+        tempkingcoor[1]=to[1];  
+        $("#boarddetails").append("Entered move_leads_to_check");
+        if(isCheck(tempkingcoor,0)===1)
+        {
+            $("#boarddetails").append("  Check on the king");
+            //kingcoor[0]=tempkingcoor[0];                            //was from[0], which is wrong since kingcoor should be changed back only if from and kingcoor were same(first if condition) 
+            //kingcoor[1]=tempkingcoor[1];                               //was from[1], which is wrong. if it was from kingcoor would change everytime there's a check
+            board[from[0]][from[1]]=temp;
+            board[to[0]][to[1]]=tempto;
+            $("#boarddetails").append("Leaving move_leads_to_check");
+            return 1;                                                   //Returns 1 if it leads to a check
+        }
+        else
+        {
+            $("#boarddetails").append(" No Check on the king");
+            // kingcoor[0]=tempkingcoor[0];
+            // kingcoor[1]=tempkingcoor[1];
+            board[from[0]][from[1]]=temp;
+            board[to[0]][to[1]]=tempto;
+            $("#boarddetails").append("Leaving move_leads_to_check");
+            return 0;
+        }
+    }
     if(isCheck(kingcoor,0)===1)
-    {
-        $("#boarddetails").append("  Check on the king");
-        kingcoor[0]=tempkingcoor[0];                            //was from[0], which is wrong since kingcoor should be changed back only if from and kingcoor were same(first if condition) 
-        kingcoor[1]=tempkingcoor[1];                               //was from[1], which is wrong. if it was from kingcoor would change everytime there's a check
-        board[from[0]][from[1]]=temp;
-        board[to[0]][to[1]]=tempto;
-        $("#boarddetails").append("Leaving move_leads_to_check");
-        return 1;                                                   //Returns 1 if it leads to a check
-    }
-    else
-    {
-        $("#boarddetails").append(" No Check on the king");
-        board[from[0]][from[1]]=temp;
-        board[to[0]][to[1]]=tempto;
-        $("#boarddetails").append("Leaving move_leads_to_check");
-        return 0;
-    }
+        {
+            $("#boarddetails").append("  Check on the king");
+            //kingcoor[0]=tempkingcoor[0];                            //was from[0], which is wrong since kingcoor should be changed back only if from and kingcoor were same(first if condition) 
+            //kingcoor[1]=tempkingcoor[1];                               //was from[1], which is wrong. if it was from kingcoor would change everytime there's a check
+            board[from[0]][from[1]]=temp;
+            board[to[0]][to[1]]=tempto;
+            $("#boarddetails").append("Leaving move_leads_to_check");
+            return 1;                                                   //Returns 1 if it leads to a check
+        }
+        else
+        {
+            $("#boarddetails").append(" No Check on the king");
+            // kingcoor[0]=tempkingcoor[0];
+            // kingcoor[1]=tempkingcoor[1];
+            board[from[0]][from[1]]=temp;
+            board[to[0]][to[1]]=tempto;
+            $("#boarddetails").append("Leaving move_leads_to_check");
+            return 0;
+        }
+
 }
 
 
