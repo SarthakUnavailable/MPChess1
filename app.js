@@ -23,14 +23,14 @@ var BLACK_PAWN = -WHITE_PAWN;
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
 */
-var board = [[0,0,0,BLACK_QUEEN,BLACK_KING, 0,0,0],
-             [0,,0,0,0,0,0,0],
+var board = [[0,BLACK_QUEEN,0,0,BLACK_KING,0,0,0],
+             [0,WHITE_QUEEN,0,0,0,0,WHITE_ROOK],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
-             [0,0,0, WHITE_QUEEN, WHITE_KING, WHITE_ROOK,0,0]];
+             [0,0,0, 0, WHITE_KING, 0,0,0]];
 
 var click_count=0,move_count=0;
 var from=[],to=[];
@@ -117,7 +117,7 @@ $('#board').click(function(event)
 
 function move_init(board,event) //to move the corresponding clicked pieces
 {
-          var target,row_index,column_index,piece,tempkingcoor=[];
+          var target,row_index,column_index,piece;
           target = $(event.target);
           target.addClass("divborder");
           row_index=target.data("row");
@@ -160,20 +160,6 @@ function move_init(board,event) //to move the corresponding clicked pieces
             $("#board").html(" ");
             $("#turn").html(move_count%2);
             drawBoard(board);
-            if(move_count%2===0)
-                tempkingcoor=black_king_coor;
-            else
-                tempkingcoor=white_king_coor;
-            $("#boarddetails").append("checking for the check for the other color\n");
-            if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
-            {   
-                $("#boarddetails").append(move_count%2==0?'Check for white':'Check for black');
-
-                if(isCheckMate(tempkingcoor))
-                    $("#boarddetails").append("Checkmate bitch!");
-
-            //target.removeClass("divborder");
-            }
         }
 }
 function possible_move(from,to,piece) //To adhere to the movements of the pieces according to the chess rules
@@ -411,8 +397,21 @@ if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move
 
 function change(from,to,piece)
 {
+    var tempkingcoor=[];
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
+    if(move_count%2===0)
+        tempkingcoor=black_king_coor;
+    else
+        tempkingcoor=white_king_coor;
+    $("#boarddetails").append("checking for the check for the other color\n");
+    if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
+    {   
+        $("#boarddetails").html(move_count%2==0?'Check for black':'Check for white');
+            if(isCheckMate(tempkingcoor))
+                $("#boarddetails").html("Checkmate bitch!");
+        //target.removeClass("divborder");
+    }
     move_count++;
     var str="board="+board[to[0]][to[1]];
     $("#details").html(str);
@@ -555,6 +554,8 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     if(isCheck(kingcoor)===1)
     {
         $("#boarddetails").append("  Check on the king");
+        kingcoor[0]=from[0];
+        kingcoor[1]=from[1];
         board[from[0]][from[1]]=temp;
         board[to[0]][to[1]]=tempto;
         return 1;                                                   //Returns 1 if it leads to a check
@@ -568,6 +569,7 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     }
 }
 
+
 function isCheck(kingcoor)                                              //knight and pawn pending
 {
     var i,j;
@@ -578,25 +580,35 @@ function isCheck(kingcoor)                                              //knight
 
     if(i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
         return 1;
-    else
-    {
-        $("#boarddetails").append("NO check at down. i="+i+"j="+j);
-    }
+    // else
+    // {
+    //     $("#boarddetails").append("NO check at down. i="+i+"j="+j);
+    // }
 
     for(i=kingcoor[0]-1,j=kingcoor[1];i>=0&&board[i][j]==0;i--); //Up -- i stops at the first piece it sees (either white or black)
 
     if(i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
         return 1;
 
-    for(i=kingcoor[0],j=kingcoor[1]+1;j<8&&board[i][j]==0;j++); //Horizontal Right -- j stops at the first piece it sees (either white or black)
+    for(i=kingcoor[0],j=kingcoor[1]+1;j<8&&board[i][j]==0;j++) //Horizontal Right -- j stops at the first piece it sees (either white or black)
+            $("#boarddetails").append('\ni='+i+' and j='+j+'board of ij is '+board[i][j]+'\n');
 
     if(j<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
         return 1;
+    else
+    {
+        $("#boarddetails").append("NO check at right. i="+i+"j="+j);
+    }
+
 
     for(i=kingcoor[0],j=kingcoor[1]-1;j>=0&&board[i][j]==0;j--); //Horizontal left -- j stops at the first piece it sees (either white or black)
 
     if(j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0  && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
         return 1;
+    else
+    {
+        $("#boarddetails").append("NO check at left. i="+i+"j="+j);
+    }
 
     for(i=kingcoor[0]+1,j=kingcoor[1]+1;j<8&&i<8&&board[i][j]==0;i++,j++); //Diagonal right down -- (i,j) stops at the first piece it sees (either white or black)
 
@@ -626,9 +638,12 @@ function isCheck(kingcoor)                                              //knight
 
 function isCheckMate(kingcoor)
 {
-    var i=[],count=0;
+    $("#boarddetails").append("\nEntering isCheckMate with " + kingcoor[0] + ' and '+kingcoor[1]+'.\n');
+    var i=[],temp=0;
     i[0]=kingcoor[0]-1;
     i[1]=kingcoor[1]-1;
+    temp=board[kingcoor[0]][kingcoor[1]];
+    board[kingcoor[0]][kingcoor[1]]=0;
     for(;i[0]<=kingcoor[0]+1;i[0]+=1)
     {
         if(i[0]>=8 || i[0]<0)
@@ -639,9 +654,17 @@ function isCheckMate(kingcoor)
         {
             if(i[1]>=8 || i[1]<0)
                 continue;
+            board[i[0]][i[1]]=temp;
             if(isCheck(i)===0)
+            {
+                $('#boarddetails').append('Exitting coz no check at '+i[0]+' and '+i[1]+' and board[actual kingcoor] is '+board[kingcoor[0]][kingcoor[1]]+'\n');
+                board[kingcoor[0]][kingcoor[1]]=temp;
+                board[i[0]][i[1]]=0;
                 return 0;  
+            }
+            board[i[0]][i[1]]=0;
         }                                                     
     }
+    board[kingcoor[0]][kingcoor[1]]=temp;
     return 1;                                           //it is a checkmate
 }
