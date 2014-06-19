@@ -14,7 +14,7 @@ var BLACK_BISHOP = -WHITE_BISHOP;
 var BLACK_KNIGHT = -WHITE_KNIGHT;
 var BLACK_PAWN = -WHITE_PAWN;
 
-/*var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
+var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
              [BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -22,8 +22,7 @@ var BLACK_PAWN = -WHITE_PAWN;
              [0,0,0,0,0,0,0,0],
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
-*/
-var board = [[0,BLACK_QUEEN,0,0,BLACK_KING,0,0,0],
+/*var board = [[0,BLACK_QUEEN,0,0,BLACK_KING,0,0,0],
              [0,WHITE_QUEEN,0,0,0,0,WHITE_ROOK],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -31,7 +30,7 @@ var board = [[0,BLACK_QUEEN,0,0,BLACK_KING,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0, 0, WHITE_KING, 0,0,0]];
-
+*/
 var click_count=0,move_count=0;
 var from=[],to=[];
 var oldtarget,newtarget;
@@ -42,7 +41,7 @@ white_king_coor[0]=7;
 white_king_coor[1]=4;
 black_king_coor[0]=0;
 black_king_coor[1]=4;
-
+var tempkingcoor=[];
 function drawBoard(board){ //to draw the board
     var str = '';
     for( var i = 0 ; i < 8 ; i++ ){
@@ -153,8 +152,9 @@ function move_init(board,event) //to move the corresponding clicked pieces
              // newtarget.removeClass("divborder");
               return;
             }
-            validate_move(from,to,oldtarget.data("piece")); //to validate move. oldtarget's piece cuz new target will be empty space
             click_count=0;
+            validate_move(from,to,oldtarget.data("piece")); //to validate move. oldtarget's piece cuz new target will be empty space
+            
             newtarget=target;
             oldtarget.removeClass("divborder");
             $("#board").html(" ");
@@ -201,6 +201,7 @@ function possible_move(from,to,piece) //To adhere to the movements of the pieces
 
                 if(board[to[0]][to[1]]!=0)
                 {
+                    //$('#boarddetails').append('\n\nWait.board[to[0][to[1]]='+board[to[0]][to[1]]);
                     killstr+='<div class="'+getPieceName(board[to[0]][to[1]])+'"></div>';
                     $('#kill').html(killstr);
                 }
@@ -366,7 +367,7 @@ function possible_move(from,to,piece) //To adhere to the movements of the pieces
                 return 0;
             break;
         
-        default: $("#boarddetails").html("Dafuq");
+        default: $("#boarddetails").append("Dafuq");
 
             return 0;
             break;
@@ -385,7 +386,7 @@ if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move
 //    $("#boarddetails").html("Check if this move is made");
     return ;
   }
-  $("#boarddetails").append("Changing the coor");
+  //$("#boarddetails").append("Changing the coor");
 
   if(possible_move(from,to,piece) === 1)
   {
@@ -397,20 +398,24 @@ if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move
 
 function change(from,to,piece)
 {
-    var tempkingcoor=[];
+    $("#boarddetails").append("Entered change function\n");
+    
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
+    $("#boarddetails").append("board[to[0][to[1]="+board[to[0]][to[1]]+"\n to[0]="+to[0]+"to[1]="+to[1]);
     if(move_count%2===0)
         tempkingcoor=black_king_coor;
     else
         tempkingcoor=white_king_coor;
     $("#boarddetails").append("checking for the check for the other color\n");
-    if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
+    if(isCheck(tempkingcoor,0)===1)                           //is there a check for the other colour?  
     {   
 
-        $("#boarddetails").html(move_count%2==0?'Check for black':'Check for white');
+        $("#boarddetails").append(move_count%2==0?'Check for black':'Check for white');
             if(isCheckMate(tempkingcoor))
-                $("#boarddetails").html("Checkmate bitch!");
+                $("etails").append("Checkmate!");
+            else
+                $("#boarddetails").append("Not checkmate");
         //target.removeClass("divborder");
     }
     move_count++;
@@ -420,6 +425,7 @@ function change(from,to,piece)
 
 function isPathValid(from,to,piece)
 {
+    $("#boarddetails").append("Entered isPathValid\n");
     var row_diff,column_diff;
     var direction;
     var i=-1,j=-1,incr_j,incr_i;
@@ -487,7 +493,7 @@ function isPathValid(from,to,piece)
             if(i<8 && i>=0 && j<8 && j>=0)
                 if(board[i][j])
                 {
-                    $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                    $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
                     return false;
                 }
             i--;
@@ -501,7 +507,7 @@ function isPathValid(from,to,piece)
             if(i<8 && i>=0 && j<8 && j>=0)
                 if(board[i][j])
                 {
-                    $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                    $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
                     return false;
                 }
             i++;
@@ -516,7 +522,7 @@ function isPathValid(from,to,piece)
                 if(i<8 && i>=0 && j<8 && j>=0)
                 {   if(board[i][j])
                     {
-                        $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                        $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
                         return false;
                     }
                     j+=incr_j;
@@ -529,7 +535,7 @@ function isPathValid(from,to,piece)
                 {   
                     if(board[i][j])
                     {
-                        $("#boarddetails").html("Invalid move. i= "+i+" j= "+ j);
+                        $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
                         return false;
                     }
                 j+=incr_j;
@@ -548,17 +554,19 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     board[from[0]][from[1]]=0;
     if(from[0]==kingcoor[0] && from[1]==kingcoor[1])
     {
+        $("#boarddetails").append("the hell?");
         kingcoor[0]=to[0];
         kingcoor[1]=to[1];
     }    
     $("#boarddetails").append("Entered move_leads_to_check");
-    if(isCheck(kingcoor)===1)
+    if(isCheck(kingcoor,0)===1)
     {
         $("#boarddetails").append("  Check on the king");
-        kingcoor[0]=from[0];
-        kingcoor[1]=from[1];
+        kingcoor[0]=tempkingcoor[0];                            //was from[0], which is wrong since kingcoor should be changed back only if from and kingcoor were same(first if condition) 
+        kingcoor[1]=tempkingcoor[1];                               //was from[1], which is wrong. if it was from kingcoor would change everytime there's a check
         board[from[0]][from[1]]=temp;
         board[to[0]][to[1]]=tempto;
+        $("#boarddetails").append("Leaving move_leads_to_check");
         return 1;                                                   //Returns 1 if it leads to a check
     }
     else
@@ -566,75 +574,176 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
         $("#boarddetails").append(" No Check on the king");
         board[from[0]][from[1]]=temp;
         board[to[0]][to[1]]=tempto;
+        $("#boarddetails").append("Leaving move_leads_to_check");
         return 0;
     }
 }
 
 
-function isCheck(kingcoor)                                              //knight and pawn pending
+function isCheck(kingcoor,flag)                                              //knight and pawn pending
 {
-    var i,j;
+    var i,j,tuple=[];
 //    $('#boarddetails').html("entered with "+kingcoor[0]+" and "+kingcoor[1]);
     //i_incr=1,j_incr=0
+    $("#boarddetails").append("Entered isCheck\n");
     $("#boarddetails").append("kingcoor[0]="+kingcoor[0]+"kingcoor[1]="+kingcoor[1]);
     for(i=kingcoor[0]+1,j=kingcoor[1];i<8&&board[i][j]==0;i++); //Down -- i stops at the first piece it sees (either white or black)
 
     if(i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
-        return 1;
-    // else
-    // {
-    //     $("#boarddetails").append("NO check at down. i="+i+"j="+j);
-    // }
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
+    
 
     for(i=kingcoor[0]-1,j=kingcoor[1];i>=0&&board[i][j]==0;i--); //Up -- i stops at the first piece it sees (either white or black)
 
     if(i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
-        return 1;
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
 
-    for(i=kingcoor[0],j=kingcoor[1]+1;j<8&&board[i][j]==0;j++) //Horizontal Right -- j stops at the first piece it sees (either white or black)
-            $("#boarddetails").append('\ni='+i+' and j='+j+'board of ij is '+board[i][j]+'\n');
+    for(i=kingcoor[0],j=kingcoor[1]+1;j<8&&board[i][j]==0;j++); //Horizontal Right -- j stops at the first piece it sees (either white or black)
+            //$("#boarddetails").append('\ni='+i+' and j='+j+'board of ij is '+board[i][j]+'\n');
 
     if(j<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
-        return 1;
-    else
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
+    /*else
     {
         $("#boarddetails").append("NO check at right. i="+i+"j="+j);
-    }
+    }*/
 
 
     for(i=kingcoor[0],j=kingcoor[1]-1;j>=0&&board[i][j]==0;j--); //Horizontal left -- j stops at the first piece it sees (either white or black)
 
     if(j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0  && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==4 || board[i][j]==-4))
-        return 1;
-    else
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+            {
+                $("#boarddetails").append("it is under attack");
+                return 0;
+            }
+        }
+        else
+        { 
+            $("#boarddetails").append("some text");
+            return 1;
+        }
+    }
+
+   /* else
     {
         $("#boarddetails").append("NO check at left. i="+i+"j="+j);
-    }
+    }*/
 
     for(i=kingcoor[0]+1,j=kingcoor[1]+1;j<8&&i<8&&board[i][j]==0;i++,j++); //Diagonal right down -- (i,j) stops at the first piece it sees (either white or black)
 
     if(j<8 && i<8 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
-        return 1;
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
 
     for(i=kingcoor[0]+1,j=kingcoor[1]-1;i<8&&j>=0&&board[i][j]==0;i++,j--); //Diagonal left down-- (i,j) stops at the first piece it sees (either white or black)
 
     if(i<8 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0  && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
-    {   
-        $('#boarddetails').append("returning 1. check at dld"); 
-        return 1;
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
     }
-
     for(i=kingcoor[0]-1,j=kingcoor[1]-1;i>=0&&j>=0&&board[i][j]==0;i--,j--); //Diagonal left up -- (i,j) stops at the first piece it sees (either white or black)
 
     if(i>=0 && j>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
-        return 1;
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
 
     for(i=kingcoor[0]-1,j=kingcoor[1]+1;j<8&&i>=0&&board[i][j]==0;i--,j++); //Diagonal right up -- (i,j) stops at the first piece it sees (either white or black)
 
     if(j<8 && i>=0 && board[i][j]*board[kingcoor[0]][kingcoor[1]]<0 && (board[i][j]==5 || board[i][j]==-5 || board[i][j]==3 || board[i][j]==-3))
-        return 1;
+    {
+        if(flag===1)
+        {
+            tuple[0]=i;
+            tuple[1]=j;
+            if(isCheck(tuple,0)===0)
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
+    
+    // for(i=kingcoor[0],j=kingcoor[1];)
 //    $('#boarddetails').html("No check on "+kingcoor[0]+' '+kingcoor[1]);
     return 0;                           //no check
+
 }
 
 function isCheckMate(kingcoor)
@@ -643,30 +752,48 @@ function isCheckMate(kingcoor)
     $("#boarddetails").append("\nEntering isCheckMate with " + kingcoor[0] + ' and '+kingcoor[1]+'.\n');
     var i=[],temp=0;
     i[0]=kingcoor[0]-1;
+    var temporary=0,oldpiece;
+    temporary=kingcoor[1]-1;
     i[1]=kingcoor[1]-1;
     temp=board[kingcoor[0]][kingcoor[1]];
     board[kingcoor[0]][kingcoor[1]]=0;
     for(;i[0]<=kingcoor[0]+1;i[0]+=1)
     {
+        $("#boarddetails").append("for loop with i[0]="+i[0]+"i[1]="+i[1]+"\n");
         if(i[0]>=8 || i[0]<0)
+        {
+            $('#boarddetails').append('Exceed bounds i[0]='+i[0]+"\n");
             continue;
-        
-        for(;i[1]<=kingcoor[1]+1;i[1]+=1)
+        }
+        for(i[1]=temporary;i[1]<=kingcoor[1]+1;i[1]+=1)
         {
             if(i[1]>=8 || i[1]<0)
+            {
+                $('#boarddetails').append('Exceed bounds i[1]='+i[1]+"\n");
                 continue;
-
+            }
+            oldpiece=board[i[0]][i[1]];
             board[i[0]][i[1]]=temp;
-            if(isCheck(i)===0)
+            if(isCheck(i,0)===0)
             {
                 $('#boarddetails').append('Exitting coz no check at '+i[0]+' and '+i[1]+' and board[actual kingcoor] is '+board[kingcoor[0]][kingcoor[1]]+'\n');
                 board[kingcoor[0]][kingcoor[1]]=temp;
-                board[i[0]][i[1]]=0;
+                board[i[0]][i[1]]=oldpiece;
                 return 0;  
             }
-            board[i[0]][i[1]]=0;
-        }                                                     
+            board[i[0]][i[1]]=oldpiece;
+
+        }  
+
     }
+
     board[kingcoor[0]][kingcoor[1]]=temp;
-    return 1;                                           //it is a checkmate
+    $('#boarddetails').append("sdf;fjsfddfds\n");
+    if(isCheck(kingcoor,1)===0)
+    {
+        $('#boarddetails').append("not checkmate");
+        return 0;
+    }
+    else
+        return 1;                                           //it is a checkmate
 }
