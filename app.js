@@ -160,20 +160,7 @@ function move_init(board,event) //to move the corresponding clicked pieces
             $("#board").html(" ");
             $("#turn").html(move_count%2);
             drawBoard(board);
-            if(move_count%2===0)
-                tempkingcoor=black_king_coor;
-            else
-                tempkingcoor=white_king_coor;
-            $("#boarddetails").append("checking for the check for the other color\n");
-            if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
-            {   
-                $("#boarddetails").append(move_count%2==0?'Check for white':'Check for black');
-
-                if(isCheckMate(tempkingcoor))
-                    $("#boarddetails").append("Checkmate bitch!");
-
-            //target.removeClass("divborder");
-            }
+           
         }
 }
 function possible_move(from,to,piece) //To adhere to the movements of the pieces according to the chess rules
@@ -413,6 +400,19 @@ function change(from,to,piece)
 {
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
+    if(move_count%2===0)
+        tempkingcoor=black_king_coor;
+    else
+        tempkingcoor=white_king_coor;
+    $("#boarddetails").append("checking for the check for the other color\n");
+    if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
+    {   
+        $("#boarddetails").append(move_count%2==0?'Check for white':'Check for black');
+        if(isCheckMate(tempkingcoor))
+            $("#boarddetails").html("Checkmate bitch!");
+
+            //target.removeClass("divborder");
+    }
     move_count++;
     var str="board="+board[to[0]][to[1]];
     $("#details").html(str);
@@ -555,6 +555,8 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     if(isCheck(kingcoor)===1)
     {
         $("#boarddetails").append("  Check on the king");
+        kingcoor[0]=from[0];
+        kingcoor[1]=from[1];
         board[from[0]][from[1]]=temp;
         board[to[0]][to[1]]=tempto;
         return 1;                                                   //Returns 1 if it leads to a check
@@ -626,18 +628,20 @@ function isCheck(kingcoor)                                              //knight
 
 function isCheckMate(kingcoor)
 {
-    var i=[],count=0;
+    var i=[];
     i[0]=kingcoor[0]-1;
     i[1]=kingcoor[1]-1;
+    //board[kingcoor[0]][kingcoor[1]]=0;
     for(;i[0]<=kingcoor[0]+1;i[0]+=1)
     {
         if(i[0]>=8 || i[0]<0)
             continue;
-        if(i[0]==kingcoor[0] && i[0]==kingcoor[1])
-            continue;
+        
         for(;i[1]<=kingcoor[1]+1;i[1]+=1)
         {
             if(i[1]>=8 || i[1]<0)
+                continue;
+            if(i[0]==kingcoor[0] && i[1]==kingcoor[1])
                 continue;
             if(isCheck(i)===0)
                 return 0;  
