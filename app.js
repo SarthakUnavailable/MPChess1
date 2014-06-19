@@ -160,10 +160,6 @@ function move_init(board,event) //to move the corresponding clicked pieces
             $("#board").html(" ");
             $("#turn").html(move_count%2);
             drawBoard(board);
-<<<<<<< HEAD
-           
-=======
->>>>>>> upstream/checkmate
         }
 }
 function possible_move(from,to,piece) //To adhere to the movements of the pieces according to the chess rules
@@ -411,18 +407,11 @@ function change(from,to,piece)
     $("#boarddetails").append("checking for the check for the other color\n");
     if(isCheck(tempkingcoor)===1)                           //is there a check for the other colour?  
     {   
-<<<<<<< HEAD
-        $("#boarddetails").append(move_count%2==0?'Check for white':'Check for black');
-        if(isCheckMate(tempkingcoor))
-            $("#boarddetails").html("Checkmate bitch!");
 
-            //target.removeClass("divborder");
-=======
         $("#boarddetails").html(move_count%2==0?'Check for black':'Check for white');
             if(isCheckMate(tempkingcoor))
                 $("#boarddetails").html("Checkmate bitch!");
         //target.removeClass("divborder");
->>>>>>> upstream/checkmate
     }
     move_count++;
     var str="board="+board[to[0]][to[1]];
@@ -650,19 +639,13 @@ function isCheck(kingcoor)                                              //knight
 
 function isCheckMate(kingcoor)
 {
-<<<<<<< HEAD
-    var i=[];
-    i[0]=kingcoor[0]-1;
-    i[1]=kingcoor[1]-1;
-    //board[kingcoor[0]][kingcoor[1]]=0;
-=======
+
     $("#boarddetails").append("\nEntering isCheckMate with " + kingcoor[0] + ' and '+kingcoor[1]+'.\n');
     var i=[],temp=0;
     i[0]=kingcoor[0]-1;
     i[1]=kingcoor[1]-1;
     temp=board[kingcoor[0]][kingcoor[1]];
     board[kingcoor[0]][kingcoor[1]]=0;
->>>>>>> upstream/checkmate
     for(;i[0]<=kingcoor[0]+1;i[0]+=1)
     {
         if(i[0]>=8 || i[0]<0)
@@ -672,12 +655,8 @@ function isCheckMate(kingcoor)
         {
             if(i[1]>=8 || i[1]<0)
                 continue;
-<<<<<<< HEAD
-            if(i[0]==kingcoor[0] && i[1]==kingcoor[1])
-                continue;
-=======
+
             board[i[0]][i[1]]=temp;
->>>>>>> upstream/checkmate
             if(isCheck(i)===0)
             {
                 $('#boarddetails').append('Exitting coz no check at '+i[0]+' and '+i[1]+' and board[actual kingcoor] is '+board[kingcoor[0]][kingcoor[1]]+'\n');
