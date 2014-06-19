@@ -14,7 +14,7 @@ var BLACK_BISHOP = -WHITE_BISHOP;
 var BLACK_KNIGHT = -WHITE_KNIGHT;
 var BLACK_PAWN = -WHITE_PAWN;
 
-var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
+/*var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
              [BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -22,7 +22,7 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [0,0,0,0,0,0,0,0],
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
-/*var board = [[0,BLACK_QUEEN,0,0,BLACK_KING,0,0,0],
+*/var board = [[0,0,0,0,BLACK_KING,0,0,0],
              [0,WHITE_QUEEN,0,0,0,0,WHITE_ROOK],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -30,7 +30,7 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0, 0, WHITE_KING, 0,0,0]];
-*/
+
 var click_count=0,move_count=0;
 var from=[],to=[];
 var oldtarget,newtarget;
@@ -413,7 +413,7 @@ function change(from,to,piece)
 
         $("#boarddetails").append(move_count%2==0?'Check for black':'Check for white');
             if(isCheckMate(tempkingcoor))
-                $("etails").append("Checkmate!");
+                $("#boarddetails").append("Checkmate!");
             else
                 $("#boarddetails").append("Not checkmate");
         //target.removeClass("divborder");
@@ -739,8 +739,6 @@ function isCheck(kingcoor,flag)                                              //k
         else
             return 1;
     }
-    
-    // for(i=kingcoor[0],j=kingcoor[1];)
 //    $('#boarddetails').html("No check on "+kingcoor[0]+' '+kingcoor[1]);
     return 0;                           //no check
 
