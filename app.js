@@ -23,13 +23,13 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
 /*
 var board = [[0,0,0,0,BLACK_KING,0,0,0],
-             [0,0,WHITE_PAWN,WHITE_PAWN,0,WHITE_PAWN,WHITE_PAWN,0],
-             [0,0,WHITE_PAWN,WHITE_PAWN,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,WHITE_KING,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
-             [0,0,0,WHITE_PAWN,0,0,0,0],
-             [0,0,0,0,WHITE_KING,0,0,0]];
+             [0,0,0,0,0,0,0,0]];
 */
 var click_count=0,move_count=0;
 var from=[],to=[];
@@ -555,9 +555,8 @@ function move_leads_to_check(from,to,kingcoor)                          //Checks
     board[to[0]][to[1]]=board[from[0]][from[1]];
     board[from[0]][from[1]]=0;
     var tempkingcoor=[];
-    if(from[0]==kingcoor[0] && from[1]==kingcoor[1])
+    if(from[0]==kingcoor[0] && from[1]==kingcoor[1])                        //If the king is moved
     {
-        $("#boarddetails").append("the hell?");
         tempkingcoor[0]=to[0];
         tempkingcoor[1]=to[1];  
         $("#boarddetails").append("Entered move_leads_to_check");
@@ -809,11 +808,27 @@ function isCheck(kingcoor,flag)                                              //k
 
     //Pawn
     //Add boundary conditions for the pawn.. Both x and y coordinates
-    $('#boarddetails').append("entered for pawn agnst black king "+kingcoor[0]+kingcoor[1]);
     if((checkforboundary(kingcoor[0]+1,kingcoor[1]+1) && board[kingcoor[0]+1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]+1]==1) || (checkforboundary(kingcoor[0]+1,kingcoor[1]-1) && board[kingcoor[0]+1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]-1]==1 ))
         return 1;
     if((checkforboundary(kingcoor[0]-1,kingcoor[1]-1) && board[kingcoor[0]-1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]-1][kingcoor[1]-1]==-1) || (checkforboundary(kingcoor[0]-1,kingcoor[1]+1) && board[kingcoor[0]-1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0) && board[kingcoor[0]-1][kingcoor[1]+1]==-1)          //Check for white king by a black pawn
         return 1;
+
+    //for the king, by the king, to the king :D
+
+    var q=kingcoor[0]-1;
+    for(;q<=kingcoor[0]+1;q++)
+    {
+        if(checkforboundary(q,3)==0)
+            continue;
+        for(var w=kingcoor[1]-1;w<=kingcoor[1]+1;w++)
+        {
+            if(checkforboundary(w,3)==0)
+                continue;
+            if(Math.abs(board[q][w])==6 && board[q][w]*board[kingcoor[0]][kingcoor[1]]<0)
+                return 1;
+            $('#boarddetails').append("No check for king at "+q+w+' .............................');
+        }
+    }
 
     return 0;                           //no check
 }
