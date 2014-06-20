@@ -23,8 +23,8 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
 /*
 var board = [[0,0,0,0,BLACK_KING,0,0,0],
-             [0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0],
+             [0,0,WHITE_PAWN,WHITE_PAWN,0,WHITE_PAWN,WHITE_PAWN,0],
+             [0,0,WHITE_PAWN,WHITE_PAWN,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -254,7 +254,6 @@ function possible_move(from,to,piece) //To adhere to the movements of the pieces
                 return 0;
             break;
         case 'WHITE_PAWN':
-        return 1;
             if(to[0]-from[0]<0) //Pawn moves forward
             {
                 if(from[0]===6 && from[0]-to[0]<=2) //First move of a pawn
@@ -493,7 +492,7 @@ function isPathValid(from,to,piece)
     {
         while(i>to[0])
         {
-            if(i<8 && i>=0 && j<8 && j>=0)
+            if(checkforboundary(i,j))
                 if(board[i][j])
                 {
                     $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
@@ -507,7 +506,7 @@ function isPathValid(from,to,piece)
     {
         while(i<to[0])
         {
-            if(i<8 && i>=0 && j<8 && j>=0)
+            if(checkforboundary(i,j))
                 if(board[i][j])
                 {
                     $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
@@ -522,7 +521,7 @@ function isPathValid(from,to,piece)
         if(column_diff>0)
             while(j<to[1])
             {
-                if(i<8 && i>=0 && j<8 && j>=0)
+                if(checkforboundary(i,j))
                 {   if(board[i][j])
                     {
                         $("#boarddetails").append("Invalid move. i= "+i+" j= "+ j);
@@ -534,7 +533,7 @@ function isPathValid(from,to,piece)
         else
             while(j>to[1])
             {
-                if(i<8 && i>=0 && j<8 && j>=0)
+                if(checkforboundary(i,j))
                 {   
                     if(board[i][j])
                     {
@@ -770,55 +769,61 @@ function isCheck(kingcoor,flag)                                              //k
     var knx,kny;
     knx=kingcoor[0]+1;
     kny=kingcoor[1]+2;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2 && board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2 && board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]+2;
     kny=kingcoor[1]+1;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
-
 
     knx=kingcoor[0]-1;
     kny=kingcoor[1]-2;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]-2;
     kny=kingcoor[1]-1;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]+1;
     kny=kingcoor[1]-2;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]+2;
     kny=kingcoor[1]-1;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]-1;
     kny=kingcoor[1]+2;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
 
     knx=kingcoor[0]-2;
     kny=kingcoor[1]+1;
-    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+    if(checkforboundary(knx,kny) && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
         return 1;
-/*
+
     //Pawn
     //Add boundary conditions for the pawn.. Both x and y coordinates
-        $('#boarddetails').append("entered for pawn agnst black king "+kingcoor[0]+kingcoor[1]);
-        if((board[kingcoor[0]+1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]+1]==1) || (board[kingcoor[0]+1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]-1]==1 ))
-            return 1;
-        if((board[kingcoor[0]-1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]-1][kingcoor[1]-1]==-1) || (board[kingcoor[0]-1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0) && board[kingcoor[0]-1][kingcoor[1]+1]==-1)          //Check for white king by a black pawn
-            return 1;
-*/
+    $('#boarddetails').append("entered for pawn agnst black king "+kingcoor[0]+kingcoor[1]);
+    if((checkforboundary(kingcoor[0]+1,kingcoor[1]+1) && board[kingcoor[0]+1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]+1]==1) || (checkforboundary(kingcoor[0]+1,kingcoor[1]-1) && board[kingcoor[0]+1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]-1]==1 ))
+        return 1;
+    if((checkforboundary(kingcoor[0]-1,kingcoor[1]-1) && board[kingcoor[0]-1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]-1][kingcoor[1]-1]==-1) || (checkforboundary(kingcoor[0]-1,kingcoor[1]+1) && board[kingcoor[0]-1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0) && board[kingcoor[0]-1][kingcoor[1]+1]==-1)          //Check for white king by a black pawn
+        return 1;
 
     return 0;                           //no check
+}
+
+function checkforboundary(a,b)
+{
+    if(a<8 && a>=0 && b<8 && b>=0)
+        return 1;
+    else
+        return 0;
 }
 
 function isCheckMate(kingcoor)
