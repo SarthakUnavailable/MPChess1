@@ -13,7 +13,6 @@ var BLACK_ROOK = -WHITE_ROOK;
 var BLACK_BISHOP = -WHITE_BISHOP;
 var BLACK_KNIGHT = -WHITE_KNIGHT;
 var BLACK_PAWN = -WHITE_PAWN;
-
 var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK],
              [BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN],
              [0,0,0,0,0,0,0,0],
@@ -22,14 +21,15 @@ var board = [[BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, B
              [0,0,0,0,0,0,0,0],
              [WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN],
              [WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK]];
-/*var board = [[0,0,0,0,BLACK_KING,0,0,0],
-             [0,0,0,0,0,0,WHITE_ROOK,0],
-             [0,WHITE_QUEEN,0,0,0,0,0,0],
+/*
+var board = [[0,0,0,0,BLACK_KING,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
-             [0,0,0, 0, WHITE_KING, 0,0,0]];
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,WHITE_PAWN,0,0,0,0],
+             [0,0,0,0,WHITE_KING,0,0,0]];
 */
 var click_count=0,move_count=0;
 var from=[],to=[];
@@ -254,6 +254,7 @@ function possible_move(from,to,piece) //To adhere to the movements of the pieces
                 return 0;
             break;
         case 'WHITE_PAWN':
+        return 1;
             if(to[0]-from[0]<0) //Pawn moves forward
             {
                 if(from[0]===6 && from[0]-to[0]<=2) //First move of a pawn
@@ -381,7 +382,7 @@ function validate_move(from,to,piece) //Check whether the to[] coordinates are e
   if((board[to[0]][to[1]]*board[from[0]][from[1]])>0)                                   //Return 0 if same color piece is present in to[]
     return 0;
 
-if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)==1) || (move_count%2==0 && move_leads_to_check(from,to,white_king_coor)===1))
+  if((move_count%2==1 && move_leads_to_check(from,to,black_king_coor)===1) || (move_count%2==0 && move_leads_to_check(from,to,white_king_coor)===1))
   {
 //    $("#boarddetails").html("Check if this move is made");
     return ;
@@ -413,7 +414,7 @@ function change(from,to,piece)
     {   
        // var tuple=[];
        // tuple=tempkingcoor;
-        $("#boarddetails").append(move_count%2==0?'Check for black':'Check for white');
+        $("#boarddetails").html(move_count%2==0?'Check for black':'Check for white');
             if(isCheckMate(tempkingcoor))
                 $("#boarddetails").append("Checkmate!");
             else
@@ -629,7 +630,6 @@ function isCheck(kingcoor,flag)                                              //k
         else
             return 1;
     }
-    
 
     for(i=kingcoor[0]-1,j=kingcoor[1];i>=0&&board[i][j]==0;i--); //Up -- i stops at the first piece it sees (either white or black)
 
@@ -765,9 +765,60 @@ function isCheck(kingcoor,flag)                                              //k
         else
             return 1;
     }
-//    $('#boarddetails').html("No check on "+kingcoor[0]+' '+kingcoor[1]);
-    return 0;                           //no check
 
+    //Check for Knight
+    var knx,kny;
+    knx=kingcoor[0]+1;
+    kny=kingcoor[1]+2;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2 && board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]+2;
+    kny=kingcoor[1]+1;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+
+    knx=kingcoor[0]-1;
+    kny=kingcoor[1]-2;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]-2;
+    kny=kingcoor[1]-1;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]+1;
+    kny=kingcoor[1]-2;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]+2;
+    kny=kingcoor[1]-1;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]-1;
+    kny=kingcoor[1]+2;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+
+    knx=kingcoor[0]-2;
+    kny=kingcoor[1]+1;
+    if(knx>=0 && knx<8 && kny<8 && kny>=0 && Math.abs(board[knx][kny])==2&& board[knx][kny]*board[kingcoor[0]][kingcoor[1]]<0)
+        return 1;
+/*
+    //Pawn
+    //Add boundary conditions for the pawn.. Both x and y coordinates
+        $('#boarddetails').append("entered for pawn agnst black king "+kingcoor[0]+kingcoor[1]);
+        if((board[kingcoor[0]+1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]+1]==1) || (board[kingcoor[0]+1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]+1][kingcoor[1]-1]==1 ))
+            return 1;
+        if((board[kingcoor[0]-1][kingcoor[1]-1]*board[kingcoor[0]][kingcoor[1]]<0 && board[kingcoor[0]-1][kingcoor[1]-1]==-1) || (board[kingcoor[0]-1][kingcoor[1]+1]*board[kingcoor[0]][kingcoor[1]]<0) && board[kingcoor[0]-1][kingcoor[1]+1]==-1)          //Check for white king by a black pawn
+            return 1;
+*/
+
+    return 0;                           //no check
 }
 
 function isCheckMate(kingcoor)
